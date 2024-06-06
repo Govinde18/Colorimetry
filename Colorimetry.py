@@ -4,10 +4,13 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 def main():
-    st.title("Estimation of concentration of Unknown sample")
+    st.title("Estimation of Concentration of Unknown Sample")
     
     st.header("Input Data")
     st.write("Enter the concentration (µg/ml) and optical density values for the standard samples and unknown sample:")
+    
+    # User selects the number of samples
+    num_samples = st.number_input("Select the number of samples (including one unknown sample):", min_value=1, max_value=10, step=1)
     
     # Create a form to take inputs
     with st.form("input_form"):
@@ -23,7 +26,7 @@ def main():
         concentrations = []
         optical_densities = []
         
-        for i in range(6):            
+        for i in range(num_samples - 1):            
             concentration = cols[1].number_input(f"Concentration {i+1}", min_value=0.0, format="%.2f", step=0.1, key=f"conc_{i}")
             optical_density = cols[2].number_input(f"Optical Density {i+1}", min_value=0.0, format="%.3f", step=0.001, key=f"od_{i}")
             
@@ -33,13 +36,13 @@ def main():
         # Input for the unknown sample
         st.write("### Unknown Sample")
         cols[1].write("To be calculated")
-        unknown_optical_density = cols[2].number_input("Optical Density of unknown sample at specific nm:", min_value=0.0, format="%.3f", step=0.001, key="od_6")
+        unknown_optical_density = cols[2].number_input("Optical Density of unknown sample at specific nm:", min_value=0.0, format="%.3f", step=0.001, key=f"od_{num_samples-1}")
         
         # Submit button
         submit = st.form_submit_button("Calculate Concentration")
     
     if submit:
-        if len(concentrations) == 6 and len(optical_densities) == 6:
+        if len(concentrations) == (num_samples - 1) and len(optical_densities) == (num_samples - 1):
             try:
                 # Convert to numpy arrays
                 X = np.array(concentrations).reshape(-1, 1)
